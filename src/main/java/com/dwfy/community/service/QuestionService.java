@@ -1,5 +1,6 @@
 package com.dwfy.community.service;
 
+import com.dwfy.community.dto.PageDTO;
 import com.dwfy.community.dto.QuestionDTO;
 import com.dwfy.community.mapper.QuestionMapper;
 import com.dwfy.community.mapper.UserMapper;
@@ -21,10 +22,14 @@ public class QuestionService {
     @Autowired
     private UserMapper userMapper;
 
-    public List<QuestionDTO> list() {
+    public PageDTO list(Integer page, Integer size) {
 
-        List<Question> questions = questionMapper.list();
+        Integer offset = size * (page - 1);
+
+        List<Question> questions = questionMapper.list(offset,size);
         List<QuestionDTO> questionDTOList = new ArrayList<>();
+
+        PageDTO pageDTO = new PageDTO();
         for (Question question : questions){
             User user = userMapper.findById(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
@@ -32,6 +37,11 @@ public class QuestionService {
             questionDTO.setUser(user);
             questionDTOList.add(questionDTO);
         }
-        return questionDTOList;
+        pageDTO.setQuestions(questionDTOList);
+
+        Integer totleCount = questionMapper.count();
+        pageDTO.setPagenation(totleCount,page,size);
+
+        return pageDTO;
     }
 }
