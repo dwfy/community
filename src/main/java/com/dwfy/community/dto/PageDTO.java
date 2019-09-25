@@ -14,10 +14,10 @@ public class PageDTO {
     private boolean showEndPage;
     private Integer page;
     private List<Integer> pages = new ArrayList<Integer>();
+    private Integer totalPage;
 
     public void setPagenation(Integer totleCount, Integer page, Integer size) {
 
-        Integer totalPage = 0;
 
         if (totleCount % size == 0) {
             totalPage = totleCount / size;
@@ -25,13 +25,21 @@ public class PageDTO {
             totalPage = totleCount / size + 1;
         }
 
+        if (page < 1){
+            page = 1;
+        }
+
+        if (page > totalPage){
+            page = totalPage;
+        }
+        this.page = page;
         pages.add(page);
         for (int i = 1; i <= 3; i++) {
             if (page - i > 0) {
-                pages.add(page - i, 0);
+                pages.add(0,page - i);
             }
-            if (page + i <= totleCount) {
-                pages.add(page + 1);
+            if (page + i <= totalPage) {
+                pages.add(page + i);
             }
         }
 
