@@ -25,17 +25,23 @@ public class QuestionService {
     public PageDTO list(Integer page, Integer size) {
 
         PageDTO pageDTO = new PageDTO();
+        Integer totalPage;
         Integer totleCount = questionMapper.count();
-        pageDTO.setPagenation(totleCount,page,size);
+
+        if (totleCount % size == 0) {
+            totalPage = totleCount / size;
+        } else {
+            totalPage = totleCount / size + 1;
+        }
 
         if (page < 1){
             page = 1;
         }
 
-        if (page > pageDTO.getTotalPage()){
-            page = pageDTO.getTotalPage();
+        if (page > totalPage){
+            page = totalPage;
         }
-
+        pageDTO.setPagenation(totalPage,page);
         Integer offset = size * (page - 1);
 
         List<Question> questions = questionMapper.list(offset,size);
@@ -52,5 +58,50 @@ public class QuestionService {
 
 
         return pageDTO;
+    }
+
+    public PageDTO list(Integer userId, Integer page, Integer size) {
+        PageDTO pageDTO = new PageDTO();
+
+        Integer totalPage;
+        Integer totleCount = questionMapper.countByUserId(userId);
+
+        if (totleCount % size == 0) {
+            totalPage = totleCount / size;
+        } else {
+            totalPage = totleCount / size + 1;
+        }
+
+        if (page < 1){
+            page = 1;
+        }
+
+        if (page > totalPage){
+            page = totalPage;
+        }
+        pageDTO.setPagenation(totalPage,page);
+        Integer offset = size * (page - 1);
+
+        List<Question> questions = questionMapper.listByUserId(userId,offset,size);
+        List<QuestionDTO> questionDTOList = new ArrayList<>();
+
+        for (Question question : questions){
+            User user = userMapper.findById(question.getCreator());
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(question,questionDTO);
+            questionDTO.setUser(user);
+            questionDTOList.add(questionDTO);
+        }
+        pageDTO.setQuestions(questionDTOList);
+
+
+        return pageDTO;
+    }
+
+    public QuestionDTO getById(Integer id) {
+        Question question = questionMapper.getById(id);
+        QuestionDTO questionDTO = new QuestionDTO();
+        BeanUtils.copyProperties(question,questionDTO);
+        return questionDTO;
     }
 }
