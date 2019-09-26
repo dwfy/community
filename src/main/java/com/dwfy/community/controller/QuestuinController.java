@@ -15,7 +15,7 @@ public class QuestuinController {
     @Autowired
     private QuestionService questionService;
 
-    @GetMapping("/question{id}")
+    @GetMapping("/question/{id}")
     public String question(@PathVariable(name = "id") Integer id,
                            Model model){
 
