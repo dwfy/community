@@ -4,6 +4,7 @@ import com.dwfy.community.dto.PageDTO;
 import com.dwfy.community.dto.QuestionDTO;
 import com.dwfy.community.exception.CustomizeErrorCode;
 import com.dwfy.community.exception.CustomizeException;
+import com.dwfy.community.mapper.QuestionExtMapper;
 import com.dwfy.community.mapper.QuestionMapper;
 import com.dwfy.community.mapper.UserMapper;
 import com.dwfy.community.model.Question;
@@ -19,6 +20,9 @@ import java.util.List;
 
 @Service
 public class QuestionService {
+
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
 
     @Autowired
     private QuestionMapper questionMapper;
@@ -141,5 +145,12 @@ public class QuestionService {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+    public void incView(Integer id) {
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
     }
 }
